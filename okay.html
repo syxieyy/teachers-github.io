@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers' Day Memories</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        section {
+            padding: 20px;
+        }
+        .photo-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .photo-gallery img {
+            max-width: 300px;
+            max-height: 200px;
+            margin: 10px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .photo-gallery img:hover {
+            border-color: #4CAF50;
+        }
+        h2 {
+            text-align: center;
+        }
+        /* Fullscreen viewer styles */
+        .fullscreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .fullscreen img {
+            max-width: 90%;
+            max-height: 80%;
+            transition: transform 0.3s ease;
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            color: #4CAF50;
+        }
+        .prev {
+            left: 10px;
+        }
+        .next {
+            right: 10px;
+        }
+        .exit {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .exit:hover {
+            color: red;
+        }
+        .zoom-controls {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        .zoom-button {
+            font-size: 1.5rem;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .zoom-button:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Teachers' Day Memories</h1>
+</header>
+
+<section>
+    <h2>Teachers' Day 2016</h2>
+    <div class="photo-gallery">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/1.jpg" alt="Teachers Day 2016 Photo 1">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/2.jpg" alt="Teachers Day 2016 Photo 2">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/3.jpg" alt="Teachers Day 2016 Photo 3">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/4.jpg" alt="Teachers Day 2016 Photo 4">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/6.jpg" alt="Teachers Day 2016 Photo 5">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/7.jpg" alt="Teachers Day 2016 Photo 6">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/8.jpg" alt="Teachers Day 2016 Photo 7">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/8(1).jpg" alt="Teachers Day 2016 Photo 8">
+        <img src="file:///C:/Users/TE/Desktop/aum, teachers day 2016/9.jpg" alt="Teachers Day 2016 Photo 9">
+    </div>
+</section>
+
+<section>
+    <h2>Teachers' Day 2017</h2>
+    <div class="photo-gallery">
+        <img src="file:///C:/Users/TE/Desktop/teachers day 2017/a.jpg" alt="Teachers Day 2017 Photo A">
+        <img src="file:///C:/Users/TE/Desktop/teachers day 2017/b.jpg" alt="Teachers Day 2017 Photo B">
+        <img src="file:///C:/Users/TE/Desktop/teachers day 2017/c.jpg" alt="Teachers Day 2017 Photo C">
+        <img src="file:///C:/Users/TE/Desktop/teachers day 2017/d.jpg" alt="Teachers Day 2017 Photo D">
+        <img src="file:///C:/Users/TE/Desktop/teachers day 2017/e.jpg" alt="Teachers Day 2017 Photo E">
+    </div>
+</section>
+
+<div class="fullscreen" id="fullscreen">
+    <button class="nav-button prev" id="prev">&lt;</button>
+    <img id="fullscreenImage" src="" alt="">
+    <button class="nav-button next" id="next">&gt;</button>
+    <button class="exit" id="exit">&times;</button>
+    <div class="zoom-controls">
+        <button class="zoom-button" id="zoomIn">+</button>
+        <button class="zoom-button" id="zoomOut">-</button>
+    </div>
+</div>
+
+<script>
+    const images = document.querySelectorAll('.photo-gallery img');
+    const fullscreen = document.getElementById('fullscreen');
+    const fullscreenImage = document.getElementById('fullscreenImage');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+    const exitButton = document.getElementById('exit');
+    const zoomInButton = document.getElementById('zoomIn');
+    const zoomOutButton = document.getElementById('zoomOut');
+    let currentIndex = 0;
+    let scale = 1;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+
+    function openFullscreen(index) {
+        currentIndex = index;
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        fullscreenImage.style.transform = `translate(0px, 0px) scale(${scale})`;
+        fullscreenImage.src = images[currentIndex].src;
+        fullscreen.style.display = 'flex';
+    }
+
+    function closeFullscreen() {
+        fullscreen.style.display = 'none';
+    }
+
+    function showNextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        fullscreenImage.src = images[currentIndex].src;
+    }
+
+    function showPrevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        fullscreenImage.src = images[currentIndex].src;
+    }
+
+    function zoomIn() {
+        scale += 0.1;
+        fullscreenImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    function zoomOut() {
+        scale = Math.max(1, scale - 0.1); // Prevent scaling below the original size
+        fullscreenImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    function startDrag(e) {
+        isDragging = true;
+        startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+        fullscreenImage.style.cursor = 'grabbing';
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+
+        const currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+
+        translateX += deltaX;
+        translateY += deltaY;
+
+        fullscreenImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+        startX = currentX;
+        startY = currentY;
+    }
+
+    function endDrag() {
+        isDragging = false;
+        fullscreenImage.style.cursor = 'grab';
+    }
+
+    images.forEach((img, index) => {
+        img.addEventListener('click', () => openFullscreen(index));
+    });
+
+    exitButton.addEventListener('click', closeFullscreen);
+    nextButton.addEventListener('click', showNextImage);
+    prevButton.addEventListener('click', showPrevImage);
+    zoomInButton.addEventListener('click', zoomIn);
+    zoomOutButton.addEventListener('click', zoomOut);
+
+    fullscreenImage.addEventListener('mousedown', startDrag);
+    fullscreenImage.addEventListener('mousemove', drag);
+    fullscreenImage.addEventListener('mouseup', endDrag);
+    fullscreenImage.addEventListener('mouseleave', endDrag);
+
+    fullscreenImage.addEventListener('touchstart', startDrag);
+    fullscreenImage.addEventListener('touchmove', drag);
+    fullscreenImage.addEventListener('touchend', endDrag);
+
+    fullscreen.addEventListener('click', (e) => {
+        if (e.target === fullscreen) closeFullscreen();
+    });
+</script>
+
+
+</body>
+</html>
